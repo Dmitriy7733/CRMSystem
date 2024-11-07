@@ -1,0 +1,11 @@
+﻿@model CRMSystem.ViewModels.PagingInfo
+
+<div class="pagination">
+    @if (Model.TotalPage > 1)
+    {
+        for (int i = 1; i <= Model.TotalPage; i++)
+        {
+            <a href="@Url.Action("Index", new { page = i })" class="@(i == Model.CurrentPage ? "active" : "")">@i</a>
+        }
+    }
+</div>

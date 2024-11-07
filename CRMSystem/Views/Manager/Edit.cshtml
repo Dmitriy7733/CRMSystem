@@ -1,0 +1,15 @@
+﻿@model CRMSystem.ViewModels.ClientViewModel
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label asp-for="ContactInfo"></label>
+        <input asp-for="ContactInfo" />
+    </div>
+    <!-- Добавьте остальные поля -->
+    <button type="submit">Save</button>
+</form>
