@@ -1,6 +1,7 @@
 ﻿using CRMSystem.DB;
 using CRMSystem.Models;
 using CRMSystem.Repository.Interfaces;
+using CRMSystem.ViewModels;
 
 
 namespace CRMSystem.Repository.Implementations
@@ -23,13 +24,16 @@ namespace CRMSystem.Repository.Implementations
         {
             if (client.Id == 0)
             {
+                // Новый клиент
                 _context.Clients.Add(client);
             }
             else
             {
-                var dbEntry = _context.Clients.FirstOrDefault(c => c.Id == client.Id);
+                // Существующий клиент
+                var dbEntry = _context.Clients.FirstOrDefault(e => e.Id == client.Id);
                 if (dbEntry != null)
                 {
+                    // Обновляем поля
                     dbEntry.Name = client.Name;
                     dbEntry.ContactInfo = client.ContactInfo;
                     dbEntry.Address = client.Address;
@@ -38,6 +42,7 @@ namespace CRMSystem.Repository.Implementations
                     dbEntry.PostalCode = client.PostalCode;
                     dbEntry.Country = client.Country;
                     dbEntry.Phone = client.Phone;
+                    dbEntry.Fax = client.Fax;
                     dbEntry.HomePage = client.HomePage;
                     dbEntry.Extension = client.Extension;
                     dbEntry.PhoneNumber = client.PhoneNumber;
@@ -46,9 +51,16 @@ namespace CRMSystem.Repository.Implementations
             _context.SaveChanges();
         }
 
-        public void Delete(int id)
+
+        public void AddClient(Client client)
         {
-            var client = _context.Clients.FirstOrDefault(c => c.Id == id);
+            _context.Clients.Add(client);
+            _context.SaveChanges();
+        }
+
+        public void Delete(long id)
+        {
+            var client = _context.Clients.FirstOrDefault(e => e.Id == id);
             if (client != null)
             {
                 _context.Clients.Remove(client);
@@ -56,10 +68,11 @@ namespace CRMSystem.Repository.Implementations
             }
         }
 
-        public Client GetClientById(int id)
+        public Client GetClientById(long id)
         {
-            return _context.Clients.FirstOrDefault(c => c.Id == id);
+            return _context.Clients.FirstOrDefault(e => e.Id == id);
         }
+
 
         public void AddEvent(Event newEvent)
         {
@@ -67,7 +80,7 @@ namespace CRMSystem.Repository.Implementations
             _context.SaveChanges();
         }
 
-        public IEnumerable<Event> GetEventsByClientId(int clientId)
+        public IEnumerable<Event> GetEventsByClientId(long clientId)
         {
             return _context.Events.Where(e => e.ClientId == clientId).ToList();
         }

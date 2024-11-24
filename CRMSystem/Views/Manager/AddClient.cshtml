@@ -1,11 +1,8 @@
-﻿@using CRMSystem.Models
-@model Client
+﻿@model CRMSystem.Models.Client
 
-<h2>Редактировать клиента</h2>
+<h2>Добавить клиента</h2>
 
-<form asp-action="Edit" class="container mt-4">
-    <input type="hidden" asp-for="Id" />
-
+<form asp-action="AddClient" class="container mt-4">
     <div class="mb-3">
         <label asp-for="Name" class="form-label">Имя клиента</label>
         <input asp-for="Name" class="form-control" required />
@@ -78,5 +75,5 @@
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <button type="submit" class="btn btn-primary">Добавить клиента</button>
 </form>

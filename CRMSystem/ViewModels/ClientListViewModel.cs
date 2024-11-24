@@ -1,5 +1,6 @@
 ﻿using CRMSystem.Models;
 
+
 namespace CRMSystem.ViewModels
 {
     public class ClientListViewModel

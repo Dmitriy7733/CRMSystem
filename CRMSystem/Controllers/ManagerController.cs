@@ -1,4 +1,8 @@
-﻿using CRMSystem.Services.Interfaces;
+﻿
+using CRMSystem.Models;
+using CRMSystem.Repository.Interfaces;
+using CRMSystem.Services;
+using CRMSystem.Services.Interfaces;
 using CRMSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +26,7 @@ namespace CRMSystem.Controllers
         public ViewResult Edit(int id)
         {
             var client = _clientService.GetClient(id);
-            var viewModel = new ClientViewModel
+            var viewModel = new Client
             {
                 Id = client.Id,
                 Name = client.Name,
@@ -42,7 +46,7 @@ namespace CRMSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(ClientViewModel client)
+        public IActionResult Edit(Client client)
         {
             if (ModelState.IsValid)
             {
@@ -57,7 +61,27 @@ namespace CRMSystem.Controllers
             _clientService.DeleteClient(id);
             return RedirectToAction("Index");
         }
+        
+        [HttpGet]
+        public ViewResult AddClient()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public IActionResult AddClient(Client client)
+        {
+            if (ModelState.IsValid)
+            {
+                _clientService.AddClient(client);
+                return RedirectToAction("Index");
+            }
+
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            return View(client);
+        }
+
+        [HttpGet]
         public IActionResult AddEvent(int clientId)
         {
             var eventViewModel = new EventViewModel
@@ -72,16 +96,33 @@ namespace CRMSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                _clientService.AddEvent(eventViewModel);
-                return RedirectToAction("Index");
+                
+                {
+                    _clientService.AddEvent(eventViewModel);
+                    return RedirectToAction("Events", new { clientId = eventViewModel.ClientId });
+                }
+
             }
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
             return View(eventViewModel);
         }
 
         public IActionResult Events(int clientId)
         {
             var events = _clientService.GetEventsByClientId(clientId);
-            return View(events);
+
+            var eventViewModels = events.Select(e => new EventViewModel
+            {
+                //Id = e.Id,
+                ClientId = e.ClientId,
+                Type = e.Type,
+                Result = e.Result,
+                Description = e.Description,
+                FollowUpOption = e.FollowUpOption
+            }).ToList(); // Не забудьте вызвать ToList(), чтобы выполнить запрос
+
+            return View(eventViewModels);
         }
+
     }
 }

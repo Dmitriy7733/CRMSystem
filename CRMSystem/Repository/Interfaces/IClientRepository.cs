@@ -6,9 +6,11 @@ namespace CRMSystem.Repository.Interfaces
     {
         IEnumerable<Client> Clients { get; }
         void Save(Client client);
-        void Delete(int id);
-        Client GetClientById(int id);
+        void Delete(long id);
+        Client GetClientById(long id);
         void AddEvent(Event newEvent);
-        IEnumerable<Event> GetEventsByClientId(int clientId);
+        IEnumerable<Event> GetEventsByClientId(long clientId);
+         void AddClient(Client client);
+
     }
 }

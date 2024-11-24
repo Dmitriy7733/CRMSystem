@@ -8,7 +8,7 @@ namespace CRMSystem.DB
     {
         public AppIdentityContext(DbContextOptions<AppIdentityContext> options) : base(options)
         {
-
+            
         }
     }
 }

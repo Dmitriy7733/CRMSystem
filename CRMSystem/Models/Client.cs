@@ -15,6 +15,6 @@
         public string? HomePage { get; set; }
         public string? Extension { get; set; }
         public string? PhoneNumber { get; set; }
-
+        public IEnumerable<Event>? Events { get; set; }
     }
 }

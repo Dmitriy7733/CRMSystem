@@ -1,4 +1,5 @@
 ﻿using CRMSystem.Services.Interfaces;
+using CRMSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRMSystem.Controllers
@@ -13,7 +14,7 @@ namespace CRMSystem.Controllers
             _service = service;
         }
 
-
+       
         public ViewResult Index(int page = 1)
         {
             var result = _service.GetClientByPage(page);

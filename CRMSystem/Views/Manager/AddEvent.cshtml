@@ -1,9 +1,11 @@
 ﻿@model CRMSystem.ViewModels.EventViewModel
 
-<form asp-action="AddEvent">
+<h2>Добавить событие для клиента</h2>
+
+<form asp-action="AddEvent" method="POST">
     <input type="hidden" asp-for="ClientId" />
     <div>
-        <label asp-for="Type"></label>
+        <label asp-for="Type">Тип события</label>
         <select asp-for="Type">
             <option value="Встреча">Встреча</option>
             <option value="Звонок">Звонок</option>
@@ -11,20 +13,20 @@
         </select>
     </div>
     <div>
-        <label asp-for="Result"></label>
-        <input asp-for="Result" />
+        <label asp-for="Result">Результат</label>
+        <textarea asp-for="Result"></textarea>
     </div>
     <div>
-        <label asp-for="Description"></label>
+        <label asp-for="Description">Описание</label>
         <textarea asp-for="Description"></textarea>
     </div>
     <div>
-        <label asp-for="FollowUpOption"></label>
+        <label asp-for="FollowUpOption">Выберите опцию для обратной связи</label>
         <select asp-for="FollowUpOption">
             <option value="Перезвонить">Перезвонить</option>
             <option value="Готов заключить договор">Готов заключить договор</option>
             <option value="Думает">Думает</option>
         </select>
     </div>
-    <button type="submit">Add Event</button>
+    <button type="submit" class="btn btn-primary">Добавить событие</button>
 </form>

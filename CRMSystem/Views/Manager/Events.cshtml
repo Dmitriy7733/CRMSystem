@@ -1,11 +1,26 @@
-﻿@model IEnumerable<CRMSystem.Models.Event>
+﻿
+@model IEnumerable<CRMSystem.ViewModels.EventViewModel>
 
+<h2>События для клиента</h2>
 @foreach (var crmEvent in Model)
 {
     <div>
         <h4>@crmEvent.Type</h4>
         <p>@crmEvent.Description</p>
-        <p>@crmEvent.Result</p>
-        <p>@crmEvent.FollowUpOption</p>
+        <p>Результат: @crmEvent.Result</p>
+        <p>Следующие шаги: @crmEvent.FollowUpOption</p>
     </div>
 }
+
+<h3>Добавить новое событие</h3>
+<form asp-action="AddEvent" method="GET">
+    @if (Model.Any())
+    {
+        <input type="hidden" name="clientId" value="@Model.First().ClientId" />
+    }
+    else
+    {
+        <p>У данного клиента нет событий.</p>
+    }
+    <button type="submit" class="btn btn-primary">Добавить событие</button>
+</form>

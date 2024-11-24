@@ -5,7 +5,7 @@
 namespace CRMSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class MigrationName : Migration
+    public partial class InitialAppDbMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,7 +59,8 @@ namespace CRMSystem.Migrations
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Result = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FollowUpOption = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    FollowUpOption = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EventId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -70,12 +71,22 @@ namespace CRMSystem.Migrations
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Events_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_ClientId",
                 table: "Events",
                 column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Events_EventId",
+                table: "Events",
+                column: "EventId");
         }
 
         /// <inheritdoc />

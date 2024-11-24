@@ -2,6 +2,7 @@
 using CRMSystem.Services.Interfaces;
 using CRMSystem.Models;
 using CRMSystem.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 
 
@@ -25,10 +26,10 @@ namespace CRMSystem.Services.Implementations
 
         public ClientListViewModel GetClientByPage(int page)
         {
-            // Получаем общее количество клиентов
+            
             var totalItems = _repository.Clients.Count();
 
-            // Получаем клиентов для текущей страницы
+            
             var clients = _repository.Clients
                 .OrderBy(e => e.Id)
                 .Skip((page - 1) * _pageSize)
@@ -51,7 +52,7 @@ namespace CRMSystem.Services.Implementations
             return result;
         }
 
-        public void SaveClient(ClientViewModel client)
+        public void SaveClient(Client client)
         {
             var clientEntity = new Client
             {
@@ -69,6 +70,7 @@ namespace CRMSystem.Services.Implementations
                 Extension = client.Extension,
                 PhoneNumber = client.PhoneNumber
             };
+
             _repository.Save(clientEntity);
         }
 
@@ -76,23 +78,68 @@ namespace CRMSystem.Services.Implementations
         {
             _repository.Delete(id);
         }
-
-        public void AddEvent(EventViewModel eventViewModel)
-        {
-            var newEvent = new Event
-            {
-                ClientId = eventViewModel.ClientId,
-                Type = eventViewModel.Type,
-                Result = eventViewModel.Result,
-                Description = eventViewModel.Description,
-                FollowUpOption = eventViewModel.FollowUpOption
-            };
-            _repository.AddEvent(newEvent);
-        }
-
         public IEnumerable<Event> GetEventsByClientId(int clientId)
         {
             return _repository.GetEventsByClientId(clientId);
+        }
+        public void AddEvent(EventViewModel eventViewModel)
+        {
+            try
+            {
+                var clientExists = _repository.Clients.Any(c => c.Id == eventViewModel.ClientId);
+                if (!clientExists)
+                {
+                    throw new Exception($"Клиент с ID {eventViewModel.ClientId} не существует.");
+                }
+
+                var newEvent = new Event
+                {
+                    ClientId = eventViewModel.ClientId,
+                    Type = eventViewModel.Type,
+                    Result = eventViewModel.Result,
+                    Description = eventViewModel.Description,
+                    FollowUpOption = eventViewModel.FollowUpOption
+                };
+
+                _repository.AddEvent(newEvent);
+            }
+            catch (Exception ex)
+            {
+                // Логируйте или обрабатывайте исключение
+                throw new Exception("Ошибка при добавлении события: " + ex.Message);
+            }
+        }
+
+
+        public void AddClient(Client client)
+        {
+            var clientEntity = new Client
+            {
+                Id = client.Id,
+                Name = client.Name,
+                ContactInfo = client.ContactInfo,
+                Address = client.Address,
+                City = client.City,
+                Region = client.Region,
+                PostalCode = client.PostalCode,
+                Country = client.Country,
+                Phone = client.Phone,
+                Fax = client.Fax,
+                HomePage = client.HomePage,
+                Extension = client.Extension,
+                PhoneNumber = client.PhoneNumber
+            };
+            _repository.AddClient(clientEntity);
+
+            var newEvent = new Event
+            {
+                ClientId = clientEntity.Id, 
+                Type = "Создание клиента", 
+                Result = "Успешно", 
+                Description = $"Клиент {clientEntity.Name} был добавлен.", 
+                FollowUpOption = "Нет дополнительных действий" 
+            };
+            _repository.AddEvent(newEvent);
         }
     }
 

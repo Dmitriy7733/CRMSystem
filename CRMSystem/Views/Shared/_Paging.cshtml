@@ -1,11 +1,15 @@
 ﻿@model CRMSystem.ViewModels.PagingInfo
 
-<div class="pagination">
-    @if (Model.TotalPage > 1)
-    {
-        for (int i = 1; i <= Model.TotalPage; i++)
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @if (Model.TotalPage > 1)
         {
-            <a href="@Url.Action("Index", new { page = i })" class="@(i == Model.CurrentPage ? "active" : "")">@i</a>
+            for (int i = 1; i <= Model.TotalPage; i++)
+            {
+                <li class="@(i == Model.CurrentPage ? "active" : "")">
+                    <a href="@Url.Action("Index", new { page = i })" class="page-link">@i</a>
+                </li>
+            }
         }
-    }
-</div>
+    </ul>
+</nav>

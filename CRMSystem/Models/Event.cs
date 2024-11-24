@@ -8,8 +8,7 @@
         public string? Result { get; set; }
         public string? Description { get; set; }
         public string? FollowUpOption { get; set; } // Перезвонить, Готов заключить договор, думает и т.д.
-
-        public Client? Client { get; set; }
-
+        public Client Client { get; set; }
+        public IEnumerable<Event>? Events { get; set; }
     }
 }

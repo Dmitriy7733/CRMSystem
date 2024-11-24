@@ -7,10 +7,11 @@ namespace CRMSystem.Services.Interfaces
     {
         Client GetClient(int id);
         ClientListViewModel GetClientByPage(int page);
-        void SaveClient(ClientViewModel client);
+        void SaveClient(Client client);
         void DeleteClient(int id);
         void AddEvent(EventViewModel eventViewModel);
         IEnumerable<Event> GetEventsByClientId(int clientId);
+        void AddClient(Client client);
     }
 }
 

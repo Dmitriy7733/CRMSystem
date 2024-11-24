@@ -3,11 +3,11 @@ using CRMSystem.DB;
 using CRMSystem.Models;
 using CRMSystem.Repository;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using CRMSystem.Services.Implementations;
 using CRMSystem.Services.Interfaces;
 using CRMSystem.Repository.Implementations;
 using CRMSystem.Repository.Interfaces;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -16,15 +16,31 @@ var crmConnectionString = builder.Configuration.GetSection("Data:CrmDb:Connectio
 var identityConnectionString = builder.Configuration.GetSection("Data:CrmIdentity:ConnectionString").Value;
 
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(crmConnectionString));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(crmConnectionString, sqlOptions =>
+        sqlOptions.EnableRetryOnFailure()));
 
-builder.Services.AddDbContext<AppIdentityContext>(options => options.UseSqlServer(identityConnectionString));
+builder.Services.AddDbContext<AppIdentityContext>(options =>
+    options.UseSqlServer(identityConnectionString, sqlOptions =>
+        sqlOptions.EnableRetryOnFailure()));
 
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppIdentityContext>() 
     .AddDefaultTokenProviders();
 
+//builder.Services.AddTransient<IClientService, ClientService>();
+
+//builder.Services.AddTransient<IOrderService, OrderService>();
+//builder.Services.AddTransient<IOrderRepository, OrderRepository>();
+
+//builder.Services.AddTransient<IAdminService, AdminService>();
+
+//builder.Services.AddScoped(SessionCart.GetCart);
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+builder.Services.AddMemoryCache();
+builder.Services.AddSession();
 
 builder.Services.AddTransient<IClientService, ClientService>();
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
@@ -37,7 +53,7 @@ var app = builder.Build();
 
 // Начальная загрузка данных
 SeedData.EnsurePopulated(app);
-await IdentitySeedData.EnsurePopulatedAsync(app);
+//await IdentitySeedData.EnsurePopulatedAsync(app);
 
 // Настройка промежуточного ПО
 app.UseDeveloperExceptionPage();
