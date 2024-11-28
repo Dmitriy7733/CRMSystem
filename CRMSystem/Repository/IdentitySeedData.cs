@@ -6,11 +6,11 @@ namespace CRMSystem.Repository
     public class IdentitySeedData
     {
         private const string _adminLogin = "Admin";
-        private const string _adminPassword = "123";
+        private const string _adminPassword = "Password123!";
         private const string _managerLogin1 = "Manager1";
-        private const string _managerPassword1 = "1234";
+        private const string _managerPassword1 = "Password1234!";
         private const string _managerLogin2 = "Manager2";
-        private const string _managerPassword2 = "12345";
+        private const string _managerPassword2 = "Password12345!";
 
         public static async Task EnsurePopulatedAsync(IApplicationBuilder app)
         {

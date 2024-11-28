@@ -1,0 +1,53 @@
+﻿@model CRMSystem.ViewModels.ManagerListViewModel
+
+@{
+    ViewData["Title"] = "Панель администратора";
+}
+
+
+<h2>Список менеджеров</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Имя менеджера</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>
+                    <form asp-action="DeleteManager" method="post">
+                        <input type="hidden" name="id" value="@user.Id" />
+                        <button type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Добавить менеджера</h3>
+<form asp-action="AddManager" method="post">
+    <label for="name">Имя менеджера:</label>
+    <input type="text" name="name" required />
+    
+    <label for="password">Пароль:</label>
+    <input type="password" name="password" required />
+    
+    <button type="submit">Добавить</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div>
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+<a asp-area="" asp-controller="Account" asp-action="Logout">Выход</a>

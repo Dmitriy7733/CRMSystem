@@ -1,52 +1,92 @@
-﻿using CRMSystem.DB;
+﻿using Microsoft.AspNetCore.Authorization;
+using CRMSystem.DB;
 using CRMSystem.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using CRMSystem.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
+//[Authorize(Roles = Role.Admin)]
 public class AdminController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly AppIdentityContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public AdminController(AppDbContext context)
+    public AdminController(AppIdentityContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
-
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var users = _context.Users.ToList();
-        return View(users);
-    }
+        // Получаем список всех пользователей
+        var users = await _userManager.Users.ToListAsync();
 
-    [HttpPost]
-    [HttpPost]
-    public async Task<IActionResult> AddUser(User user)
-    {
-        if (User.IsInRole(Role.Admin))
+        // Создаем список менеджеров
+        var managers = new List<IdentityUser>();
+
+        // Проверяем каждого пользователя на принадлежность к роли "Manager"
+        foreach (var user in users)
         {
-            user.IsAdmin = false; 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
-
-        return Unauthorized(); 
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> DeleteUser(int id)
-    {
-        
-        if (User.IsInRole("Admin")) 
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null && !user.IsAdmin) 
+            if (await _userManager.IsInRoleAsync(user, Role.Manager))
             {
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
+                managers.Add(user);
             }
+        }
+
+        // Создаем экземпляр ViewModel и передаем в представление
+        var viewModel = new ManagerListViewModel
+        {
+            Users = managers.Select(m => new User { Name = m.UserName }).ToList() // Преобразуем в нужный формат
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddManager(string name, string password)
+    {
+        // Проверяем, что имя пользователя уникально
+        var existingUser = await _userManager.FindByNameAsync(name);
+        if (existingUser != null)
+        {
+            ModelState.AddModelError("", "Пользователь с таким именем уже существует.");
+            return View("Index", await GetManagerListViewModel());
+        }
+
+        var user = new IdentityUser { UserName = name };
+        var result = await _userManager.CreateAsync(user, password);
+
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(user, Role.Manager);
             return RedirectToAction("Index");
         }
 
-        return Unauthorized(); 
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
+        }
+
+        return View("Index", await GetManagerListViewModel());
+    }
+
+    private async Task<ManagerListViewModel> GetManagerListViewModel()
+    {
+        var users = await _userManager.Users.ToListAsync();
+        var managers = new List<IdentityUser>();
+
+        foreach (var user in users)
+        {
+            if (await _userManager.IsInRoleAsync(user, Role.Manager))
+            {
+                managers.Add(user);
+            }
+        }
+
+        return new ManagerListViewModel
+        {
+            Users = managers.Select(m => new User { Name = m.UserName }).ToList()
+        };
     }
 }

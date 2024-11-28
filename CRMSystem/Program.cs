@@ -29,14 +29,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppIdentityContext>() 
     .AddDefaultTokenProviders();
 
-//builder.Services.AddTransient<IClientService, ClientService>();
-
-//builder.Services.AddTransient<IOrderService, OrderService>();
-//builder.Services.AddTransient<IOrderRepository, OrderRepository>();
-
 //builder.Services.AddTransient<IAdminService, AdminService>();
 
-//builder.Services.AddScoped(SessionCart.GetCart);
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddMemoryCache();
@@ -53,7 +48,7 @@ var app = builder.Build();
 
 // Начальная загрузка данных
 SeedData.EnsurePopulated(app);
-//await IdentitySeedData.EnsurePopulatedAsync(app);
+await IdentitySeedData.EnsurePopulatedAsync(app);
 
 // Настройка промежуточного ПО
 app.UseDeveloperExceptionPage();
@@ -66,14 +61,31 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 // Настройка маршрутов контроллеров
 app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Admin}/{action=Index}/{id?}"); // Измените здесь на Admin
+
+app.MapControllerRoute(
     name: "manager",
-    pattern: "{controller=Manager}/{action=Index}/{id?}");
+    pattern: "{controller=Manager}/{action=Index}");
 app.MapControllerRoute(
     name: "admin",
-    pattern: "{controller=Admin}/{action=Index}/{id?}");
+    pattern: "{controller=Admin}/{action=Index}");
 
+// Настройка маршрутов контроллеров
+/*app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "manager",
+    pattern: "{controller=Manager}/{action=Index}");
+app.MapControllerRoute(
+    name: "admin",
+    pattern: "{controller=Admin}/{action=Index}");*/
 
 // Запуск приложения
-app.Run();
+await app.RunAsync();
+//app.Run();

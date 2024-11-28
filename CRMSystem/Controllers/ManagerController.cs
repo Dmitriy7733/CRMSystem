@@ -119,7 +119,7 @@ namespace CRMSystem.Controllers
                 Result = e.Result,
                 Description = e.Description,
                 FollowUpOption = e.FollowUpOption
-            }).ToList(); // Не забудьте вызвать ToList(), чтобы выполнить запрос
+            }).ToList(); 
 
             return View(eventViewModels);
         }
