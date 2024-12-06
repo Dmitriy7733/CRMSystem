@@ -12,25 +12,25 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="/">CRM Система</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Manager" asp-action="Index">Клиенты</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Admin" asp-action="Index">Администратор</a>
-                    </li>
-                </ul>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline ml-auto">
+                    <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">Выход</button>
+                </form>
             </div>
         </nav>
     </header>
-    <main role="main" class="container">
+    <main role="main" class="container mt-5">
         @RenderBody()
     </main>
     <footer class="footer">
         <div class="container">
-            <span class="text-muted">© 2023 CRM Система</span>
+            <span class="text-muted">© 2024 CRM Система Попов Д.В.</span>
         </div>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

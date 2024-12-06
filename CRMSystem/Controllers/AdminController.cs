@@ -1,92 +1,83 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using CRMSystem.DB;
-using CRMSystem.Models;
+﻿using CRMSystem.Models;
+using CRMSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using CRMSystem.ViewModels;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
-//[Authorize(Roles = Role.Admin)]
-public class AdminController : Controller
+namespace CRMSystem.Controllers
 {
-    private readonly AppIdentityContext _context;
-    private readonly UserManager<IdentityUser> _userManager;
-
-    public AdminController(AppIdentityContext context, UserManager<IdentityUser> userManager)
+    public class AdminController : Controller
     {
-        _context = context;
-        _userManager = userManager;
-    }
-    public async Task<IActionResult> Index()
-    {
-        // Получаем список всех пользователей
-        var users = await _userManager.Users.ToListAsync();
+        private readonly IManagerService _managerService;
 
-        // Создаем список менеджеров
-        var managers = new List<IdentityUser>();
-
-        // Проверяем каждого пользователя на принадлежность к роли "Manager"
-        foreach (var user in users)
+        public AdminController(IManagerService managerService)
         {
-            if (await _userManager.IsInRoleAsync(user, Role.Manager))
+            _managerService = managerService;
+        }
+
+        public async Task<IActionResult> Index(string id)
+        {
+            var managers = await _managerService.GetManagersAsync();
+            //var managerToEdit = string.IsNullOrEmpty(id) ? new User() : await _managerService.GetManagerByIdAsync(id);
+
+            return View(managers);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(User manager)
+        {
+            if (ModelState.IsValid)
             {
-                managers.Add(user);
+                manager.IsAdmin = false;
+
+                if (string.IsNullOrEmpty(manager.Id))
+                {
+                    // Добавление нового менеджера
+                    await _managerService.AddManagerAsync(manager);
+                }
+                
+                return RedirectToAction("Index");
             }
+
+            // Если модель не валидна, возвращаем обратно на главную страницу
+            var managers = await _managerService.GetManagersAsync();
+            ViewBag.ManagerToEdit = manager; // Возвращаем данные о менеджере, чтобы показать ошибки
+            return View(managers);
+        }
+        
+        [HttpGet]
+        public IActionResult AddManager()
+        {
+            return View();
         }
 
-        // Создаем экземпляр ViewModel и передаем в представление
-        var viewModel = new ManagerListViewModel
+        [HttpPost]
+        public async Task<IActionResult> AddManager(User manager)
         {
-            Users = managers.Select(m => new User { Name = m.UserName }).ToList() // Преобразуем в нужный формат
-        };
+            if (ModelState.IsValid)
+            {
+                // Устанавливаем временный пароль
+                var password = "123"; // Временный пароль
+                var passwordHasher = new PasswordHasher<User>();
+                manager.PasswordHash = passwordHasher.HashPassword(manager, password);
 
-        return View(viewModel);
-    }
+                manager.Id = Guid.NewGuid().ToString(); 
 
-    [HttpPost]
-    public async Task<IActionResult> AddManager(string name, string password)
-    {
-        // Проверяем, что имя пользователя уникально
-        var existingUser = await _userManager.FindByNameAsync(name);
-        if (existingUser != null)
-        {
-            ModelState.AddModelError("", "Пользователь с таким именем уже существует.");
-            return View("Index", await GetManagerListViewModel());
+                await _managerService.AddManagerAsync(manager);
+
+                // Устанавливаем сообщение с временным паролем
+                TempData["TemporaryPasswordMessage"] = $"Менеджер {manager.Name} был успешно добавлен. Временный пароль: {password}";
+                return RedirectToAction("Index");
+            }
+            return View(manager);
+
         }
-
-        var user = new IdentityUser { UserName = name };
-        var result = await _userManager.CreateAsync(user, password);
-
-        if (result.Succeeded)
+       
+        [HttpPost] 
+        public async Task<IActionResult> Delete(string id)
         {
-            await _userManager.AddToRoleAsync(user, Role.Manager);
+            await _managerService.DeleteManagerAsync(id);
             return RedirectToAction("Index");
         }
-
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError("", error.Description);
-        }
-
-        return View("Index", await GetManagerListViewModel());
-    }
-
-    private async Task<ManagerListViewModel> GetManagerListViewModel()
-    {
-        var users = await _userManager.Users.ToListAsync();
-        var managers = new List<IdentityUser>();
-
-        foreach (var user in users)
-        {
-            if (await _userManager.IsInRoleAsync(user, Role.Manager))
-            {
-                managers.Add(user);
-            }
-        }
-
-        return new ManagerListViewModel
-        {
-            Users = managers.Select(m => new User { Name = m.UserName }).ToList()
-        };
     }
 }

@@ -1,0 +1,16 @@
+﻿@model CRMSystem.Models.User
+
+<h1>Добавить Менеджера</h1>
+
+<form method="post">
+    <div>
+        <label>Имя:</label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div>
+        <button type="submit">Добавить</button>
+    </div>
+</form>
+
+<a asp-action="Index">Назад к списку менеджеров</a>
