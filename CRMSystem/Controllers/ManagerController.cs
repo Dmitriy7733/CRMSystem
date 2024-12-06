@@ -115,7 +115,6 @@ namespace CRMSystem.Controllers
 
             var eventViewModels = events.Select(e => new EventViewModel
             {
-                //Id = e.Id,
                 ClientId = e.ClientId,
                 Type = e.Type,
                 Result = e.Result,

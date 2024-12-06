@@ -19,11 +19,9 @@ namespace CRMSystem.Repository.Implementations
 
         public async Task<IEnumerable<User>> GetManagersAsync()
         {
-            /*var managers = await _context.Users
-        .Where(u => !u.IsAdmin && !await _context.UserRoles.AnyAsync(ur => ur.UserId == u.Id && ur.RoleId == Role.Admin)) // Exclude Admins
-        .ToListAsync();*/
+            
             var managers = await _context.Users.Where(u => !u.IsAdmin).ToListAsync();
-            // Логирование
+            
             Console.WriteLine($"Найдено менеджеров: {managers.Count}");
             return managers;
         }

@@ -30,13 +30,5 @@ namespace CRMSystem.Services.Implementations
             await _repository.DeleteManagerAsync(id);
         }
 
-        /*public async Task<User> GetManagerByIdAsync(string id)
-        {
-            return await _repository.GetManagerByIdAsync(id);
-        }
-        public async Task UpdateManagerAsync(User manager)
-        {
-            await _repository.UpdateManagerAsync(manager);
-        }*/
     }
 }

@@ -7,7 +7,7 @@
         public string? Type { get; set; } // "Встреча", "Звонок", "Договор"
         public string? Result { get; set; }
         public string? Description { get; set; }
-        public string? FollowUpOption { get; set; } // Перезвонить, Готов заключить договор, думает и т.д.
+        public string? FollowUpOption { get; set; } // Перезвонить, Готов заключить договор
         public Client Client { get; set; }
         public IEnumerable<Event>? Events { get; set; }
     }

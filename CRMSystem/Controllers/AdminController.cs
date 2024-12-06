@@ -18,7 +18,6 @@ namespace CRMSystem.Controllers
         public async Task<IActionResult> Index(string id)
         {
             var managers = await _managerService.GetManagersAsync();
-            //var managerToEdit = string.IsNullOrEmpty(id) ? new User() : await _managerService.GetManagerByIdAsync(id);
 
             return View(managers);
         }
@@ -32,16 +31,13 @@ namespace CRMSystem.Controllers
 
                 if (string.IsNullOrEmpty(manager.Id))
                 {
-                    // Добавление нового менеджера
                     await _managerService.AddManagerAsync(manager);
                 }
                 
                 return RedirectToAction("Index");
             }
-
-            // Если модель не валидна, возвращаем обратно на главную страницу
             var managers = await _managerService.GetManagersAsync();
-            ViewBag.ManagerToEdit = manager; // Возвращаем данные о менеджере, чтобы показать ошибки
+            ViewBag.ManagerToEdit = manager; 
             return View(managers);
         }
         
@@ -56,7 +52,6 @@ namespace CRMSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Устанавливаем временный пароль
                 var password = "123"; // Временный пароль
                 var passwordHasher = new PasswordHasher<User>();
                 manager.PasswordHash = passwordHasher.HashPassword(manager, password);
@@ -65,7 +60,6 @@ namespace CRMSystem.Controllers
 
                 await _managerService.AddManagerAsync(manager);
 
-                // Устанавливаем сообщение с временным паролем
                 TempData["TemporaryPasswordMessage"] = $"Менеджер {manager.Name} был успешно добавлен. Временный пароль: {password}";
                 return RedirectToAction("Index");
             }

@@ -9,8 +9,6 @@ namespace CRMSystem.Services.Interfaces
         Task<IEnumerable<User>> GetManagersAsync();
         Task AddManagerAsync(User manager);
         Task DeleteManagerAsync(string id);
-        //Task<User> GetManagerByIdAsync(string id);
-        //Task UpdateManagerAsync(User manager);
     }
 }
 

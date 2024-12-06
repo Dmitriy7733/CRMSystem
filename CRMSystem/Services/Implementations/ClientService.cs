@@ -105,7 +105,6 @@ namespace CRMSystem.Services.Implementations
             }
             catch (Exception ex)
             {
-                // Логируйте или обрабатывайте исключение
                 throw new Exception("Ошибка при добавлении события: " + ex.Message);
             }
         }
